@@ -29,14 +29,14 @@ function BookPage() {
     e.preventDefault();
 
     const res = await axios.post(
-      "http://localhost:5000/api/payment/create-order",
+      "https://pakhi-city-hospital.onrender.com/api/payment/create-order",
       { phone: formData.phone }
     );
 
     // Existing patient
     if (res.data.existing) {
       const confirmRes = await axios.post(
-        "http://localhost:5000/api/appointments/confirm",
+        "https://pakhi-city-hospital.onrender.com/api/appointments/confirm",
         formData
       );
       setToken(confirmRes.data.tokenNumber);
@@ -59,7 +59,7 @@ function BookPage() {
       handler: async function (response) {
 
         const verifyRes = await axios.post(
-          "http://localhost:5000/api/payment/verify-payment",
+          "https://pakhi-city-hospital.onrender.com/api/payment/verify-payment",
           { ...response, formData }
         );
 
