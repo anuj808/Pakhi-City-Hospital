@@ -1,0 +1,80 @@
+/* Hero Layout */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 80px;
+  background: #f9fff9;
+}
+
+/* Left Side */
+.hero-left {
+  max-width: 500px;
+}
+
+.hero-left h1 {
+  font-size: 48px;
+  color: #1b5e20;
+  margin-bottom: 20px;
+}
+
+.hero-left p {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.primary-btn {
+  background: #2e7d32;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.secondary-btn {
+  border: 2px solid #2e7d32;
+  color: #2e7d32;
+  padding: 12px 22px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.primary-btn:hover {
+  background: #1b5e20;
+}
+
+.secondary-btn:hover {
+  background: #e8f5e9;
+}
+
+/* Right Side Image */
+.hero-right img {
+  width: 500px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Sections */
+.section {
+  padding: 80px;
+  text-align: center;
+}
+
+.section h2 {
+  color: #1b5e20;
+  margin-bottom: 20px;
+}
+
+.contact {
+  background: #f1f8f4;
+}
+
