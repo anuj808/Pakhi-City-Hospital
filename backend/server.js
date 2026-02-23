@@ -9,7 +9,7 @@ const paymentRoutes = require("./routes/paymentRoutes");
 
 const app = express();
 app.use(cors({
-  origin: "*"
+  origin: "https://pakhi-hospital.vercel.app"
 }));
 app.use(express.json());
 
