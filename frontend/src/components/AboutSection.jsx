@@ -1,6 +1,4 @@
 import { useState } from "react";
-import "../styles/about.css";
-
 import doctorImg from "../assets/doctor.png";
 import hospitalImg from "../assets/hospital.png";
 import staffImg from "../assets/staff.png";
@@ -14,107 +12,107 @@ function AboutSection() {
     setActiveCard((prev) => (prev === cardName ? null : cardName));
   };
 
+  const cards = [
+    {
+      id: "doctor",
+      title: "Dr. Promod Sharma",
+      desc: "Experienced MBBS doctor providing quality healthcare.",
+      extra:
+        "Dr. Promod Sharma has over 10 years of experience in general medicine and patient-focused treatment.",
+      img: doctorImg,
+    },
+    {
+      id: "hospital",
+      title: "Our Hospital",
+      desc: "Clean and well-equipped healthcare facility.",
+      extra:
+        "ICU facilities, operation theater, digital lab reports, and 24/7 emergency care.",
+      img: hospitalImg,
+    },
+    {
+      id: "staff",
+      title: "Our Staff",
+      desc: "Dedicated and professional medical team.",
+      extra:
+        "Certified nurses, lab technicians, and reception team ensuring patient comfort and safety.",
+      img: staffImg,
+    },
+    {
+      id: "services",
+      title: "Our Services",
+      desc: "Comprehensive diagnostic and treatment services.",
+      extraList: ["X-Ray", "Blood Test", "ECG", "Consultation"],
+      img: servicesImg,
+    },
+  ];
+
   return (
-    <section id="about" className="about-section">
-      <h1 className="about-title">About Pakhi Hospital</h1>
+    <section
+      id="about"
+      className="py-20 px-4 bg-gradient-to-b from-green-50 to-green-100"
+    >
+      <div className="max-w-7xl mx-auto">
 
-      <div className="card-container">
+        <h1 className="text-3xl md:text-4xl font-bold text-center text-green-900 mb-14">
+          About Pakhi Hospital
+        </h1>
 
-        {/* Doctor */}
-        <div className="about-card">
-          <img src={doctorImg} alt="Doctor" />
-          <h2>Dr. Promod Sharma</h2>
-          <p>Experienced MBBS doctor providing quality healthcare.</p>
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 
-          {activeCard === "doctor" && (
-            <div className="extra-content">
-              <p>
-                Dr. Promod Sharma has over 10 years of experience in
-                general medicine and patient-focused treatment.
-              </p>
-            </div>
-          )}
+          {cards.map((card) => {
+            const isActive = activeCard === card.id;
 
-          <button
-            className="card-btn"
-            onClick={() => toggleCard("doctor")}
-          >
-            {activeCard === "doctor" ? "Show Less" : "Show More"}
-          </button>
-        </div>
+            return (
+              <div
+                key={card.id}
+                className={`bg-white rounded-2xl p-6 text-center shadow-md transition-all duration-300 ${
+                  isActive
+                    ? "scale-105 shadow-2xl z-10"
+                    : "hover:-translate-y-2 hover:shadow-xl"
+                }`}
+              >
 
+                <img
+                  src={card.img}
+                  alt={card.title}
+                  className="w-24 h-24 mx-auto rounded-full object-cover border-4 border-green-100"
+                />
 
-        {/* Hospital */}
-        <div className="about-card">
-          <img src={hospitalImg} alt="Hospital" />
-          <h2>Our Hospital</h2>
-          <p>Clean and well-equipped healthcare facility.</p>
+                <h2 className="mt-4 text-lg font-semibold text-green-800">
+                  {card.title}
+                </h2>
 
-          {activeCard === "hospital" && (
-            <div className="extra-content">
-              <p>
-                ICU facilities, operation theater, digital lab reports,
-                and 24/7 emergency care.
-              </p>
-            </div>
-          )}
+                <p className="text-gray-600 text-sm mt-2">
+                  {card.desc}
+                </p>
 
-          <button
-            className="card-btn"
-            onClick={() => toggleCard("hospital")}
-          >
-            {activeCard === "hospital" ? "Show Less" : "Show More"}
-          </button>
-        </div>
+                {isActive && (
+                  <div className="mt-4 text-sm text-gray-700 space-y-2">
 
+                    {card.extra && <p>{card.extra}</p>}
 
-        {/* Staff */}
-        <div className="about-card">
-          <img src={staffImg} alt="Staff" />
-          <h2>Our Staff</h2>
-          <p>Dedicated and professional medical team.</p>
+                    {card.extraList && (
+                      <ul className="space-y-1">
+                        {card.extraList.map((item, index) => (
+                          <li key={index}>✔ {item}</li>
+                        ))}
+                      </ul>
+                    )}
 
-          {activeCard === "staff" && (
-            <div className="extra-content">
-              <p>
-                Certified nurses, lab technicians, and reception team
-                ensuring patient comfort and safety.
-              </p>
-            </div>
-          )}
+                  </div>
+                )}
 
-          <button
-            className="card-btn"
-            onClick={() => toggleCard("staff")}
-          >
-            {activeCard === "staff" ? "Show Less" : "Show More"}
-          </button>
-        </div>
+                <button
+                  onClick={() => toggleCard(card.id)}
+                  className="mt-5 bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-full text-sm transition shadow"
+                >
+                  {isActive ? "Show Less" : "Show More"}
+                </button>
 
+              </div>
+            );
+          })}
 
-        {/* Services */}
-        <div className="about-card">
-          <img src={servicesImg} alt="Services" />
-          <h2>Our Services</h2>
-          <p>Comprehensive diagnostic and treatment services.</p>
-
-          {activeCard === "services" && (
-            <div className="extra-content">
-              <ul>
-                <li>✔ X-Ray</li>
-                <li>✔ Blood Test</li>
-                <li>✔ ECG</li>
-                <li>✔ Consultation</li>
-              </ul>
-            </div>
-          )}
-
-          <button
-            className="card-btn"
-            onClick={() => toggleCard("services")}
-          >
-            {activeCard === "services" ? "Show Less" : "Show More"}
-          </button>
         </div>
 
       </div>

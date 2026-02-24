@@ -1,6 +1,5 @@
 import { useState } from "react";
 import axios from "axios";
-import "../styles/book.css";
 
 function BookPage() {
 
@@ -33,7 +32,6 @@ function BookPage() {
       { phone: formData.phone }
     );
 
-    // Existing patient
     if (res.data.existing) {
       const confirmRes = await axios.post(
         "https://pakhi-city-hospital.onrender.com/api/appointments/confirm",
@@ -43,7 +41,6 @@ function BookPage() {
       return;
     }
 
-    // New patient → Show payment options
     setOrderData(res.data.order);
     setShowPayment(true);
   };
@@ -68,8 +65,7 @@ function BookPage() {
           setShowPayment(false);
         }
       },
-      method: selectedMethod, // pre-select method
-      theme: { color: "#2e7d32" }
+      theme: { color: "#15803d" }
     };
 
     const rzp = new window.Razorpay(options);
@@ -77,78 +73,138 @@ function BookPage() {
   };
 
   return (
-    <section className="book-section">
-      <div className="book-container">
+    <section className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center px-4 py-12">
 
-        <h1>Book Appointment</h1>
-        <p>Date: {today}</p>
+      <div className="bg-white w-full max-w-md p-8 md:p-10 rounded-3xl shadow-2xl">
 
-        <form onSubmit={handleSubmit} className="book-form">
+        <h1 className="text-2xl md:text-3xl font-bold text-green-900 text-center">
+          Book Appointment
+        </h1>
 
-          <input name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} required />
-          <input name="address" placeholder="Address" value={formData.address} onChange={handleChange} required />
-          <input type="number" name="age" placeholder="Age" value={formData.age} onChange={handleChange} required />
-          <input name="phone" placeholder="Mobile Number" value={formData.phone} onChange={handleChange} required />
+        <p className="text-center text-gray-500 text-sm mt-2">
+          Date: {today}
+        </p>
 
-          <button type="submit">Proceed to Payment</button>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+
+          <input
+            name="name"
+            placeholder="Full Name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:outline-none bg-gray-50"
+          />
+
+          <input
+            name="address"
+            placeholder="Address"
+            value={formData.address}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:outline-none bg-gray-50"
+          />
+
+          <input
+            type="number"
+            name="age"
+            placeholder="Age"
+            value={formData.age}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:outline-none bg-gray-50"
+          />
+
+          <input
+            name="phone"
+            placeholder="Mobile Number"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:outline-none bg-gray-50"
+          />
+
+          <button
+            type="submit"
+            className="w-full bg-green-700 hover:bg-green-800 text-white py-3 rounded-full font-semibold transition shadow-lg"
+          >
+            Proceed to Payment
+          </button>
+
         </form>
 
-        {/* PAYMENT MODAL */}
-        {showPayment && (
-          <div className="payment-modal">
-            <div className="payment-box">
-              <h2>Select Payment Method</h2>
+        {token && (
+          <div className="mt-8 p-6 bg-green-100 border border-green-300 rounded-2xl text-center">
+            <h2 className="text-green-800 font-semibold">
+              Token Confirmed ✅
+            </h2>
+            <h3 className="text-3xl font-bold text-green-900 mt-2">
+              {token}
+            </h3>
+            <p className="text-gray-600 text-sm mt-2">
+              Please visit hospital after 9:00 AM
+            </p>
+          </div>
+        )}
+      </div>
 
-              <div className="payment-options">
+      {/* PAYMENT MODAL */}
+      {showPayment && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center px-4">
 
+          <div className="bg-white w-full max-w-sm p-6 rounded-2xl shadow-xl">
+
+            <h2 className="text-lg font-semibold text-green-900 text-center">
+              Select Payment Method
+            </h2>
+
+            <div className="mt-6 space-y-4">
+
+              {["upi", "card", "netbanking"].map((method) => (
                 <div
-                  className={`option ${selectedMethod === "upi" ? "active" : ""}`}
-                  onClick={() => setSelectedMethod("upi")}
+                  key={method}
+                  onClick={() => setSelectedMethod(method)}
+                  className={`cursor-pointer border rounded-xl p-4 transition ${
+                    selectedMethod === method
+                      ? "border-green-600 bg-green-50"
+                      : "border-gray-200 hover:bg-gray-50"
+                  }`}
                 >
-                  <p>UPI</p>
-                  <div className="upi-icons">
-                    <span>GPay</span>
-                    <span>PhonePe</span>
-                    <span>Paytm</span>
-                  </div>
+                  {method === "upi" && (
+                    <>
+                      <p className="font-medium">UPI</p>
+                      <div className="flex gap-2 mt-2 text-xs text-gray-500">
+                        <span className="bg-gray-100 px-2 py-1 rounded">GPay</span>
+                        <span className="bg-gray-100 px-2 py-1 rounded">PhonePe</span>
+                        <span className="bg-gray-100 px-2 py-1 rounded">Paytm</span>
+                      </div>
+                    </>
+                  )}
+
+                  {method === "card" && <p>Credit / Debit Card</p>}
+                  {method === "netbanking" && <p>Net Banking</p>}
                 </div>
-
-                <div
-                  className={`option ${selectedMethod === "card" ? "active" : ""}`}
-                  onClick={() => setSelectedMethod("card")}
-                >
-                  <p>Credit / Debit Card</p>
-                </div>
-
-                <div
-                  className={`option ${selectedMethod === "netbanking" ? "active" : ""}`}
-                  onClick={() => setSelectedMethod("netbanking")}
-                >
-                  <p>Net Banking</p>
-                </div>
-
-              </div>
-
-              <button
-                disabled={!selectedMethod}
-                onClick={openRazorpay}
-                className="pay-btn"
-              >
-                Pay ₹305
-              </button>
+              ))}
 
             </div>
-          </div>
-        )}
 
-        {token && (
-          <div className="token-box">
-            <h2>Token Confirmed ✅</h2>
-            <h3>Your Token: {token}</h3>
-          </div>
-        )}
+            <button
+              disabled={!selectedMethod}
+              onClick={openRazorpay}
+              className={`mt-6 w-full py-3 rounded-full font-semibold transition ${
+                selectedMethod
+                  ? "bg-green-700 hover:bg-green-800 text-white"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              Pay ₹305
+            </button>
 
-      </div>
+          </div>
+
+        </div>
+      )}
+
     </section>
   );
 }
