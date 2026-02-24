@@ -47,7 +47,7 @@ function BookPage() {
 
   const openRazorpay = () => {
     const options = {
-      key: "YOUR_RAZORPAY_KEY_ID",
+      key: "rzp_test_SJc8MDd9VpJqMh",
       amount: orderData.amount,
       currency: "INR",
       order_id: orderData.id,
