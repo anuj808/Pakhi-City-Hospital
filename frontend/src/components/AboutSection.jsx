@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+
 import doctorImg from "../assets/doctor.png";
 import hospitalImg from "../assets/hospital.png";
 import staffImg from "../assets/staff.png";
@@ -20,6 +22,7 @@ function AboutSection() {
       extra:
         "Dr. Promod Sharma has over 10 years of experience in general medicine and patient-focused treatment.",
       img: doctorImg,
+      action: "appointment"
     },
     {
       id: "hospital",
@@ -41,8 +44,9 @@ function AboutSection() {
       id: "services",
       title: "Our Services",
       desc: "Comprehensive diagnostic and treatment services.",
-      extraList: ["X-Ray", "Blood Test", "ECG", "Consultation"],
+      extraList: ["X-Ray", "Blood Test", "ECG", "Urine Test", "Thyroid Test"],
       img: servicesImg,
+      action: "test"
     },
   ];
 
@@ -87,7 +91,7 @@ function AboutSection() {
                 </p>
 
                 {isActive && (
-                  <div className="mt-4 text-sm text-gray-700 space-y-2">
+                  <div className="mt-4 text-sm text-gray-700 space-y-3">
 
                     {card.extra && <p>{card.extra}</p>}
 
@@ -99,12 +103,31 @@ function AboutSection() {
                       </ul>
                     )}
 
+                    {/* ACTION BUTTONS */}
+                    {card.action === "appointment" && (
+                      <Link
+                        to="/book"
+                        className="inline-block mt-3 bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-full text-sm transition shadow"
+                      >
+                        Book Appointment
+                      </Link>
+                    )}
+
+                    {card.action === "test" && (
+                      <Link
+                        to="/book-test"
+                        className="inline-block mt-3 bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-full text-sm transition shadow"
+                      >
+                        Book Test Now
+                      </Link>
+                    )}
+
                   </div>
                 )}
 
                 <button
                   onClick={() => toggleCard(card.id)}
-                  className="mt-5 bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-full text-sm transition shadow"
+                  className="mt-5 bg-green-100 hover:bg-green-200 text-green-800 px-5 py-2 rounded-full text-sm transition"
                 >
                   {isActive ? "Show Less" : "Show More"}
                 </button>
