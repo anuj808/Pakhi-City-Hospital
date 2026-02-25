@@ -7,6 +7,7 @@ const cors = require("cors");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const testRoutes = require("./routes/testRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 app.use(cors({
@@ -23,6 +24,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/tests", testRoutes);
+app.use("/api/admin", adminRoutes);
 
 const PORT = process.env.PORT || 5000;
 
