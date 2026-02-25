@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import logo from "../assets/logo.png";
 
 function BookPage() {
   const [formData, setFormData] = useState({
@@ -57,26 +58,15 @@ function BookPage() {
       description: "Registration Fee ₹305",
 
       handler: async function (response) {
-        const receiptRes = await axios.post(
+        const verifyRes = await axios.post(
           "https://pakhi-city-hospital.onrender.com/api/payment/verify-payment",
-          { ...response, formData },
-          { responseType: "blob" }
+          { ...response, formData }
         );
 
-        const url = window.URL.createObjectURL(
-          new Blob([receiptRes.data], { type: "application/pdf" })
-        );
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "Pakhi_Hospital_Receipt.pdf");
-        document.body.appendChild(link);
-        link.click();
-
-        window.URL.revokeObjectURL(url);
-
-        setShowPayment(false);
-        setToken("Confirmed");
+        if (verifyRes.data.success) {
+          setToken(verifyRes.data.tokenNumber);
+          setShowPayment(false);
+        }
       },
 
       theme: { color: "#15803d" }
@@ -87,26 +77,27 @@ function BookPage() {
   };
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center px-4 py-12">
+    <section className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex flex-col items-center px-4 py-12">
 
+      {/* 🔹 HOSPITAL HEADER */}
+      <div className="flex items-center gap-3 mb-10">
+        <img src={logo} alt="Hospital Logo" className="w-14 h-14" />
+        <div>
+          <h1 className="text-2xl font-bold text-green-900">
+            Pakhi City Hospital
+          </h1>
+          <p className="text-sm text-gray-500">
+            Trusted Healthcare Services
+          </p>
+        </div>
+      </div>
+
+      {/* 🔹 BOOKING CARD */}
       <div className="bg-white w-full max-w-lg p-10 rounded-3xl shadow-2xl">
 
-        {/* Step Indicator */}
-        <div className="flex justify-between items-center mb-8 text-sm font-medium text-gray-500">
-          <span className={!showPayment && !token ? "text-green-700" : ""}>
-            1. Details
-          </span>
-          <span className={showPayment ? "text-green-700" : ""}>
-            2. Payment
-          </span>
-          <span className={token ? "text-green-700" : ""}>
-            3. Confirmed
-          </span>
-        </div>
-
-        <h1 className="text-3xl font-bold text-green-900 text-center">
+        <h2 className="text-2xl font-bold text-green-900 text-center">
           Book Appointment
-        </h1>
+        </h2>
 
         <p className="text-center text-gray-500 text-sm mt-2">
           Date: {today}
@@ -167,7 +158,7 @@ function BookPage() {
           </form>
         )}
 
-        {/* Success Screen */}
+        {/* 🔹 SUCCESS SCREEN */}
         {token && (
           <div className="mt-10 text-center">
 
@@ -178,13 +169,16 @@ function BookPage() {
             </h2>
 
             <p className="mt-4 text-gray-600">
-              Your token has been generated successfully.
+              Your token number is:
             </p>
 
             <div className="mt-6 bg-green-100 border border-green-300 p-6 rounded-2xl">
-              <h3 className="text-xl font-bold text-green-900">
-                Please visit hospital after 9:00 AM
+              <h3 className="text-4xl font-bold text-green-900">
+                {token}
               </h3>
+              <p className="text-sm mt-2">
+                Please visit hospital after 9:00 AM
+              </p>
             </div>
 
           </div>
@@ -192,7 +186,7 @@ function BookPage() {
 
       </div>
 
-      {/* PAYMENT MODAL */}
+      {/* 🔹 PAYMENT MODAL */}
       {showPayment && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
 
