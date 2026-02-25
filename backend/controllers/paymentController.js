@@ -40,6 +40,8 @@ exports.createOrder = async (req, res) => {
 };
 
 // 🔹 Verify Payment & Generate Token
+const generateReceipt = require("../utils/generateReceipt");
+
 exports.verifyPayment = async (req, res) => {
   try {
     const {
@@ -60,7 +62,7 @@ exports.verifyPayment = async (req, res) => {
       return res.status(400).json({ success: false });
     }
 
-    // 🔥 Payment verified
+    // Payment verified
 
     let patient = await Patient.findOne({ phone: formData.phone });
 
@@ -68,7 +70,7 @@ exports.verifyPayment = async (req, res) => {
       patient = await Patient.create(formData);
     }
 
-    // 🏥 Hospital day logic (9AM reset)
+    // 9AM reset logic
     const now = new Date();
     const startOfHospitalDay = new Date();
     startOfHospitalDay.setHours(9, 0, 0, 0);
@@ -82,30 +84,33 @@ exports.verifyPayment = async (req, res) => {
       visitDate: { $gte: startOfHospitalDay }
     });
 
+    let token;
+
     if (existingVisit) {
-      return res.json({
-        success: true,
-        tokenNumber: existingVisit.tokenNumber
+      token = existingVisit.tokenNumber;
+    } else {
+      const todayCount = await Visit.countDocuments({
+        visitDate: { $gte: startOfHospitalDay }
+      });
+
+      token = todayCount + 1;
+
+      await Visit.create({
+        patientId: patient._id,
+        tokenNumber: token
       });
     }
 
-    const todayCount = await Visit.countDocuments({
-      visitDate: { $gte: startOfHospitalDay }
-    });
-
-    const token = todayCount + 1;
-
-    await Visit.create({
-      patientId: patient._id,
-      tokenNumber: token
-    });
-
-    res.json({
-      success: true,
-      tokenNumber: token
+    // 🔥 Generate and send PDF receipt
+    generateReceipt(res, {
+      name: formData.name,
+      phone: formData.phone,
+      token: token,
+      paymentId: razorpay_payment_id
     });
 
   } catch (err) {
+    console.log(err);
     res.status(500).json({ success: false });
   }
 };

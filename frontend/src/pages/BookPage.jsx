@@ -46,31 +46,43 @@ function BookPage() {
   };
 
   const openRazorpay = () => {
-    const options = {
-      key: "rzp_test_SJc8MDd9VpJqMh",
-      amount: orderData.amount,
-      currency: "INR",
-      order_id: orderData.id,
-      name: "Pakhi Hospital",
-      description: "Registration Fee ₹305",
-      handler: async function (response) {
+  const options = {
+    key: "rzp_test_SJc8MDd9VpJqMh",
+    amount: orderData.amount,
+    currency: "INR",
+    order_id: orderData.id,
+    name: "Pakhi Hospital",
+    description: "Registration Fee ₹305",
 
-        const verifyRes = await axios.post(
-          "https://pakhi-city-hospital.onrender.com/api/payment/verify-payment",
-          { ...response, formData }
-        );
+    handler: async function (response) {
 
-        if (verifyRes.data.success) {
-          setToken(verifyRes.data.tokenNumber);
-          setShowPayment(false);
-        }
-      },
-      theme: { color: "#15803d" }
-    };
+      const receiptRes = await axios.post(
+        "https://pakhi-city-hospital.onrender.com/api/payment/verify-payment",
+        { ...response, formData },
+        { responseType: "blob" }   // IMPORTANT
+      );
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+      const url = window.URL.createObjectURL(
+        new Blob([receiptRes.data], { type: "application/pdf" })
+      );
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Pakhi_Hospital_Receipt.pdf");
+      document.body.appendChild(link);
+      link.click();
+
+      window.URL.revokeObjectURL(url);
+
+      setShowPayment(false);
+    },
+
+    theme: { color: "#15803d" }
   };
+
+  const rzp = new window.Razorpay(options);
+  rzp.open();
+};
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center px-4 py-12">
