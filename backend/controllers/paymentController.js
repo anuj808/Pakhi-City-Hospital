@@ -2,6 +2,7 @@ const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const Patient = require("../models/Patient");
 const Visit = require("../models/Visit");
+const generateReceipt = require("../utils/generateReceipt");
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -22,7 +23,7 @@ exports.createOrder = async (req, res) => {
     }
 
     const options = {
-      amount: 30500, // ₹305 in paise
+      amount: 30500, // ₹305
       currency: "INR",
       receipt: "receipt_" + Date.now()
     };
@@ -35,13 +36,12 @@ exports.createOrder = async (req, res) => {
     });
 
   } catch (err) {
+    console.log("Create Order Error:", err);
     res.status(500).json({ success: false });
   }
 };
 
-// 🔹 Verify Payment & Generate Token
-const generateReceipt = require("../utils/generateReceipt");
-
+// 🔹 Verify Payment
 exports.verifyPayment = async (req, res) => {
   try {
     const {
@@ -55,14 +55,14 @@ exports.verifyPayment = async (req, res) => {
 
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_SECRET)
-      .update(body.toString())
+      .update(body)
       .digest("hex");
 
     if (expectedSignature !== razorpay_signature) {
       return res.status(400).json({ success: false });
     }
 
-    // Payment verified
+    // ✅ Payment verified
 
     let patient = await Patient.findOne({ phone: formData.phone });
 
@@ -70,7 +70,7 @@ exports.verifyPayment = async (req, res) => {
       patient = await Patient.create(formData);
     }
 
-    // 9AM reset logic
+    // 9 AM reset logic
     const now = new Date();
     const startOfHospitalDay = new Date();
     startOfHospitalDay.setHours(9, 0, 0, 0);
@@ -97,20 +97,21 @@ exports.verifyPayment = async (req, res) => {
 
       await Visit.create({
         patientId: patient._id,
-        tokenNumber: token
+        tokenNumber: token,
+        visitDate: new Date(),
+        status: "Pending"
       });
     }
 
-    // 🔥 Generate and send PDF receipt
-    generateReceipt(res, {
-      name: formData.name,
-      phone: formData.phone,
-      token: token,
+    // ✅ Return JSON ONLY
+    res.json({
+      success: true,
+      tokenNumber: token,
       paymentId: razorpay_payment_id
     });
 
   } catch (err) {
-    console.log(err);
+    console.log("Verify Error:", err);
     res.status(500).json({ success: false });
   }
 };
